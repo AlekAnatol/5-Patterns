@@ -9,10 +9,10 @@ import UIKit
 
 class FotoViewController: UIViewController {
     
-    private var photo = String()
+    private var photo: UIImage?
     
-    func configure(photoURL: String) {
-        self.photo = photoURL
+    func configure(photo: UIImage?) {
+        self.photo = photo
     }
 
     override func viewDidLoad() {
@@ -24,12 +24,12 @@ class FotoViewController: UIViewController {
                                                   width: self.view.bounds.width - 40,
                                                   height: self.view.bounds.height/2))
         
-        guard let photoURL = URL(string: photo) else { return }
-        if let data = try? Data(contentsOf: photoURL) {
-            if let image = UIImage(data: data) {
-                imageView.image = image
-            }
-        }
+//        guard let photoURL = URL(string: photo) else { return }
+//        if let data = try? Data(contentsOf: photoURL) {
+//            if let image = UIImage(data: data) {
+                imageView.image = photo
+//            }
+//        }
         
         self.view.addSubview(imageView)
     }

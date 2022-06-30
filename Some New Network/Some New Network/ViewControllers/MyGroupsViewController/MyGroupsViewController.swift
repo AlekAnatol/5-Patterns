@@ -14,74 +14,60 @@ class MyGroupsViewController: UIViewController {
     @IBOutlet weak var myGroupsTableView: UITableView!
     
     private let service = ServiceVK()
-    var realm = RealmCacheService()
-    private var token: NotificationToken?
-    
-    private let firebaseService = [FirebaseGroups]()
-    let ref = Database.database().reference(withPath: "Groups")
-    
-    var myGroupsFromRealm: Results<GroupRealmModel>? {
-        realm.readGroups(isMember: true)
-    }
-    
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        myGroupsTableView.reloadData()
-    }
+    private var myGroups = [Group]()
+    let dataLoader = LoadDataFromRealmAdapter()
     
     override func viewDidLoad() {
         self.view.backgroundColor = UIColor.brandPink
         super.viewDidLoad()
-        
         myGroupsTableView.dataSource = self
         myGroupsTableView.delegate = self
-        
         myGroupsTableView.register(UINib(nibName: "Universal  TableViewCell", bundle: nil), forCellReuseIdentifier: reuseIdentifierUniversalTableViewCell)
-        
         service.loadData(method: .cookingGroupsGet)
-        createNotificationToken()
-        
-        ref.observe(.value) { snapshot in
-            var groups:[FirebaseGroups] = []
-            for child in snapshot.children {
-                if let snapshop = child as? DataSnapshot,
-                    let group = FirebaseGroups(snapshot: snapshot) {
-                    groups.append(group)
-                }
-            }
-            groups.forEach { print($0.groupName)}
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+            dataLoader.loadGroupsFromRealm(isMember: true) { allGroups in
+            self.myGroups = allGroups
+            self.myGroupsTableView.reloadData()
         }
     }
 }
 
-private extension MyGroupsViewController{
-    
-    func createNotificationToken() {
-        token = myGroupsFromRealm?.observe { [weak self] result in
-            guard let self = self else { return }
-            
-            switch result {
-            case .initial(let myGroupsData):
-                print("We have \(myGroupsData.count) groups")
-                
-            case .update(let myGroupsData, deletions: let deletions, insertions: let insertions, modifications: let modifications):
-                
-                print("We have \(myGroupsData.count) groups")
-                let deletionsIndexPath = deletions.map { IndexPath(row: $0, section: 0) }
-                let insertionsIndexPath = insertions.map { IndexPath(row: $0, section: 0) }
-                let modificationsIndexPath = modifications.map { IndexPath(row: $0, section: 0) }
+//MARK: - TableViewDataSource
 
-                DispatchQueue.main.async {
-                    self.myGroupsTableView.beginUpdates()
-                    self.myGroupsTableView.deleteRows(at: deletionsIndexPath, with: .automatic)
-                    self.myGroupsTableView.insertRows(at: insertionsIndexPath, with: .automatic)
-                    self.myGroupsTableView.reloadRows(at: modificationsIndexPath, with: .automatic)
-                    self.myGroupsTableView.endUpdates()
-                }
-            case .error(let error):
-                print("\(error)")
-            }
-            
+extension MyGroupsViewController: UITableViewDataSource {
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return myGroups.count //?? 0
+    }
+
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        guard let cell = myGroupsTableView.dequeueReusableCell(withIdentifier: reuseIdentifierUniversalTableViewCell, for: indexPath) as? Universal__TableViewCell
+        else { return UITableViewCell() }
+        cell.configure(group: myGroups[indexPath.row]) {
+            print(self.myGroups[indexPath.row].name)
+        }
+        return cell
+    }
+}
+
+//MARK: - TableViewDelegate
+
+extension MyGroupsViewController: UITableViewDelegate {
+    
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return heightForCellTableView
+    }
+    
+    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
+        //guard let myGroups = self.myGroups else { return }
+        print("Хотим удалить группу \(myGroups[indexPath.row])")
+        dataLoader.deleteGroup(group: myGroups[indexPath.row])
+        
+        dataLoader.loadGroupsFromRealm(isMember: true) { groups in
+            self.myGroups = groups
+            self.myGroupsTableView.reloadData()
         }
     }
 }

@@ -19,7 +19,7 @@ struct GroupsResponse: Decodable {
 
 class GroupRealmModel: Object, Decodable {
     
-    private let service = ServiceVK()
+    //private let service = ServiceVK()
     
     @objc dynamic var id = 0
     @objc dynamic var name = ""

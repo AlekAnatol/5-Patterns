@@ -43,6 +43,11 @@ final class RealmCacheService {
         return realm.objects(PhotoRealmModel.self).filter("ownerID == %@", friendID)
     }
     
+    func readOneGroup(group: Group) -> Results<GroupRealmModel> {
+        let groupID = group.id
+        return realm.objects(GroupRealmModel.self).filter("id == %@", groupID)
+    }
+    
     func readGroups(isMember: Bool) -> Results<GroupRealmModel> {
         return isMember ? realm.objects(GroupRealmModel.self).filter("isMember = 1") : realm.objects(GroupRealmModel.self).filter("isMember = 0")
     }
@@ -67,7 +72,7 @@ final class RealmCacheService {
     func deleteGroupFromMyGroups(group: GroupRealmModel) {
         do {
             realm.beginWrite()
-            print(" begin delete group in realm")
+            //print(" begin delete group in realm")
             group.isMember = 0
             realm.add(group, update: .modified)
             try realm.commitWrite()

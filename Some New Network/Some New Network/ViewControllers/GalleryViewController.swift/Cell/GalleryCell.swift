@@ -32,19 +32,10 @@ class GalleryCell: UICollectionViewCell {
         heartCounterView.delegate = self
     }
 
-    func configure(fotoPath: String, likeCount: Int) {
-        fotoImageView.image = loadImage(urlString: fotoPath)
+    func configure(photo: UIImage?, likeCount: Int) {
+        fotoImageView.image = photo
         self.likeCount = likeCount
         heartCounterView.configure(count: likeCount)
-    }
-    
-    func loadImage(urlString: String) -> UIImage? {
-        let url = URL(string: urlString)
-        if let data = try? Data(contentsOf: url!) {
-            return UIImage(data: data)
-        } else {
-            return UIImage(named: "1")
-        }
     }
 }
 

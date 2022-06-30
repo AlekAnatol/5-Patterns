@@ -19,11 +19,5 @@ enum HttpMethods: String {
     case post = "POST"
 }
 
-enum TypeOfLoadingData: String {
-    case friends
-    case myGroups
-    case otherGroups
-    case photos
-}
 
 

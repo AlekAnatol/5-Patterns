@@ -6,10 +6,11 @@
 //
 
 import Foundation
+import UIKit
 
-struct Friend {
+struct Friend: ViewModelProtocol {
     let id: Int
     let firstName: String
     let lastName: String
-    let photoURL: String
+    let photo: UIImage?
 }

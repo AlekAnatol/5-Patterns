@@ -42,37 +42,24 @@ class Universal__TableViewCell: UITableViewCell {
     }
     
     func configure(friend: Friend, completion: @escaping ()->Void) {
-        let image = loadImage(urlString: friend.photoURL)
-        mainImageView.image = image
+        mainImageView.image = friend.photo
         nameLabel.text = String(friend.firstName) + " " + String(friend.lastName)
         descriptionLabel.text = ""
         self.completion = completion
-        
         makeShadow()
     }
     
-    func configure(group: GroupRealmModel, completion: @escaping ()->Void) {
-        let image = loadImage(urlString: group.photo)
-        mainImageView.image = image
+    func configure(group: Group, completion: @escaping ()->Void) {
+        mainImageView.image = group.photo
         nameLabel.text = group.name
         descriptionLabel.text = ""
         self.completion = completion
-        
         makeShadow()
     }
     
     func makeShadow() {
         avatarView.layer.cornerRadius = (heightForCellTableView - 2 * topAndButtomConstrain)/2
         mainImageView.layer.cornerRadius = avatarView.layer.cornerRadius
-    }
-    
-    func loadImage(urlString: String) -> UIImage? {
-        let url = URL(string: urlString)
-        if let data = try? Data(contentsOf: url!) {
-            return UIImage(data: data)
-        } else {
-            return UIImage(named: "1")
-        }
     }
     
     @IBAction func pressToViewButton(_ sender: Any) {

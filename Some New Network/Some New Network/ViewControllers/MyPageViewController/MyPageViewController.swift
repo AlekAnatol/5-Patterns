@@ -31,21 +31,21 @@ class MyPageViewController: UIViewController {
         
         self.view.backgroundColor = UIColor.brandPink
         logOutButton.backgroundColor = UIColor.brandPink
-        
+        //Основные элменты экрана полупрозрачные до отработки анимации с кружочками
         avatarImage.layer.cornerRadius = avatarView.layer.cornerRadius
         avatarView.layer.opacity = 0.5
         nameLabel.layer.opacity = 0.5
         homeCookerLabel.layer.opacity = 0.5
         inProfessionLabel.layer.opacity = 0.5
         sinceBornLabel.layer.opacity = 0.5
-        
+        //Загружаем данные по моим друзьям и моим группам в реалм
         service.loadData(method: .friendsGet)
         service.loadData(method: .myGroupsGet)
-        
+        //Запускаем анимацию с тремя кружочками
         animatePurplePoints(totalCount: 2)
     }
     
-    
+    //Отрабатываем нажатие книпки LogOut
     @IBAction func logOutButtonPressed(_ sender: Any) {
         do {
             try Auth.auth().signOut()
@@ -55,9 +55,7 @@ class MyPageViewController: UIViewController {
     }
     
     func animatePurplePoints(totalCount: Int, currentCount: Int = 0) {
-        
         if currentCount < totalCount {
-        
         UIView.animate(withDuration: 0.5) {[weak self] in
             self?.firstPurpleView.alpha = 1
             self?.secondPurpleView.alpha = 0
@@ -85,10 +83,11 @@ class MyPageViewController: UIViewController {
             }
         }
         } else {
+            //Кружочки делаем прозрачными
             firstPurpleView.alpha = 0
             secondPurpleView.alpha = 0
             thirdPurpleView.alpha = 0
-            
+            //Основные элементы становятся яркими
             avatarView.layer.opacity = 1
             nameLabel.layer.opacity = 1
             homeCookerLabel.layer.opacity = 1

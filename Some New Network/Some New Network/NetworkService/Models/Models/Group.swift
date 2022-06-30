@@ -5,9 +5,11 @@
 //  Created by Екатерина Алексеева on 14.01.2022.
 //
 
-struct Group {
-    let id: Int
+import UIKit
+
+struct Group: ViewModelProtocol {
+    let id:Int
     let name: String
     let isMember: Bool
-    let photoURL: String
+    let photo: UIImage?
 }
